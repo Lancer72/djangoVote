@@ -21,7 +21,7 @@
     <div class="input">
         <label for="captcha">验证码：</label>
         <input type="text" id="captcha" name="captcha">
-        <img src="/captcha/" alt="验证码" width="120">
+        <img src="/captcha/" alt="验证码" width="120" onclick="refresh_captcha(this)">
     </div>
     <div class="input">
         <input type="submit" value="登录">
@@ -29,5 +29,10 @@
     </div>
     <a href="/register">注册新用户</a>
 </form>
+<script>
+    function refresh_captcha(obj) {
+        obj.src='/captcha/?temp='+Math.random()
+    }
+</script>
 </body>
 </html>
