@@ -1,6 +1,6 @@
 import random
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -21,19 +21,23 @@ def show_teachers(request):
     except(KeyError,ValueError,Subject.DoesNotExist):
         return redirect('/')
 
-def praise_or_criticize(request):
-    # 好评
-    try:
-        tno=int(request.GET['tno'])
-        teacher=Teacher.objects.get(no=tno)
-        if request.path.startswith('/praise'):
-            teacher.good_count+=1
-        else:
-            teacher.bad_count+=1
-        teacher.save()
-        data={'code':200,'hint':'操作成功'}
-    except(KeyError,ValueError,Teacher.DoesNotExist):
-        data={'code':404,'hint':'操作失败'}
+def praise_or_criticize(request:HttpRequest):
+    # 判断用户是否登录
+    if 'username' in request.session:
+        # 好评
+        try:
+            tno=int(request.GET['tno'])
+            teacher=Teacher.objects.get(no=tno)
+            if request.path.startswith('/praise'):
+                teacher.good_count+=1
+            else:
+                teacher.bad_count+=1
+            teacher.save()
+            data={'code':200,'hint':'操作成功'}
+        except(ValueError,Teacher.DoesNotExist):
+            data={'code':404,'hint':'操作失败'}
+    else:
+        data={'code':401,'hint':'请先登录'}
     return JsonResponse(data)
 
 def register(request):
